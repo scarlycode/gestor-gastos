@@ -17,19 +17,48 @@ def get_connection():
 
 @app.route("/")
 def index():
+    categoria_filtro = request.args.get("categoria") or None
+
     conn = get_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    cur.execute(
-        "SELECT id, descripcion, monto, categoria, fecha FROM gastos ORDER BY fecha DESC;"
-    )
+
+    if categoria_filtro:
+        cur.execute(
+            "SELECT id, descripcion, monto, categoria, fecha FROM gastos "
+            "WHERE categoria = %s ORDER BY fecha DESC;",
+            (categoria_filtro,),
+        )
+    else:
+        cur.execute(
+            "SELECT id, descripcion, monto, categoria, fecha FROM gastos "
+            "ORDER BY fecha DESC;"
+        )
     gastos = cur.fetchall()
 
-    cur.execute("SELECT COALESCE(SUM(monto), 0) AS total FROM gastos;")
+    if categoria_filtro:
+        cur.execute(
+            "SELECT COALESCE(SUM(monto), 0) AS total FROM gastos WHERE categoria = %s;",
+            (categoria_filtro,),
+        )
+    else:
+        cur.execute("SELECT COALESCE(SUM(monto), 0) AS total FROM gastos;")
     total = cur.fetchone()["total"]
+
+    cur.execute(
+        "SELECT DISTINCT categoria FROM gastos WHERE categoria IS NOT NULL "
+        "AND categoria != '' ORDER BY categoria;"
+    )
+    categorias = [row["categoria"] for row in cur.fetchall()]
 
     cur.close()
     conn.close()
-    return render_template("index.html", gastos=gastos, total=total)
+    return render_template(
+        "index.html",
+        gastos=gastos,
+        total=total,
+        categorias=categorias,
+        categoria_filtro=categoria_filtro,
+    )
 
 
 @app.route("/agregar", methods=["POST"])
