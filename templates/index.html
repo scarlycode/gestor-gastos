@@ -2,10 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestor de Gastos</title>
+    <title>Finance Scarly</title>
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
     <style>
         body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: #222; }
+        header.app-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        header.app-header img.logo { height: 48px; width: 48px; object-fit: contain; border-radius: 8px; }
+        header.app-header h1 { color: #222; margin: 0; }
+        header.app-header span.subtitulo { display: block; font-size: 0.85em; color: #666; }
         form.nuevo { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         form.nuevo input { padding: 8px; flex: 1; min-width: 120px; }
         form.nuevo button { padding: 8px 16px; background: #2563eb; color: white; border: none; cursor: pointer; }
@@ -16,10 +20,18 @@
         th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
         .total { font-size: 1.2em; font-weight: bold; margin-top: 15px; }
         button.eliminar { background: #dc2626; color: white; border: none; padding: 4px 10px; cursor: pointer; }
+        footer.app-footer { margin-top: 30px; font-size: 0.8em; color: #999; text-align: center; }
     </style>
 </head>
 <body>
-    <h1>Gestor de Gastos</h1>
+    <header class="app-header">
+        <!-- Sube tu logo a /static/logo.png y aparecerá aquí automáticamente -->
+        <img class="logo" src="./static/logo_finance_scarly.png" alt="Logo Finance Scarly" onerror="this.style.display='none'">
+        <div>
+            <h1>Finance Scarly</h1>
+            <span class="subtitulo">Gestor de gastos de Scarly Padilla</span>
+        </div>
+    </header>
 
     <form class="nuevo" action="/agregar" method="POST">
         <input type="text" name="descripcion" placeholder="Descripción" required>
@@ -77,5 +89,9 @@
         Total gastado: ${{ "%.2f"|format(total) }}
         {% endif %}
     </p>
+
+    <footer class="app-footer">
+        Finance Scarly &middot; hecho por Scarly Padilla
+    </footer>
 </body>
 </html>
