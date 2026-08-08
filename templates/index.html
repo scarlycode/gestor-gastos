@@ -6,9 +6,12 @@
     <style>
         body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
         h1 { color: #222; }
-        form.nuevo { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        form.nuevo { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         form.nuevo input { padding: 8px; flex: 1; min-width: 120px; }
         form.nuevo button { padding: 8px 16px; background: #2563eb; color: white; border: none; cursor: pointer; }
+        form.filtro { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+        form.filtro select { padding: 6px; }
+        form.filtro a { font-size: 0.9em; color: #2563eb; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
         .total { font-size: 1.2em; font-weight: bold; margin-top: 15px; }
@@ -24,6 +27,21 @@
         <input type="text" name="categoria" placeholder="Categoría">
         <button type="submit">Agregar</button>
     </form>
+
+    {% if categorias %}
+    <form class="filtro" action="/" method="GET">
+        <label for="categoria">Filtrar por categoría:</label>
+        <select name="categoria" id="categoria" onchange="this.form.submit()">
+            <option value="">Todas</option>
+            {% for cat in categorias %}
+            <option value="{{ cat }}" {% if categoria_filtro == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+        {% if categoria_filtro %}
+        <a href="/">Quitar filtro</a>
+        {% endif %}
+    </form>
+    {% endif %}
 
     <table>
         <thead>
@@ -52,6 +70,12 @@
         </tbody>
     </table>
 
-    <p class="total">Total gastado: ${{ "%.2f"|format(total) }}</p>
+    <p class="total">
+        {% if categoria_filtro %}
+        Total en "{{ categoria_filtro }}": ${{ "%.2f"|format(total) }}
+        {% else %}
+        Total gastado: ${{ "%.2f"|format(total) }}
+        {% endif %}
+    </p>
 </body>
 </html>
